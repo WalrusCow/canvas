@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<style>
+    #lifeCanvas {
+        border:2px solid #000000;
+    }
+    button.lifeControl {
+        width:4em;
+    }
+</style>
+<html>
+    <head><title>Playing with the canvas</title></head>
+    <body>
+        <canvas class="grid" id="lifeCanvas" height="300" width="200">Please use a browser that supports HTML5.</canvas>
+        <br>
+        <button class="lifeControl" id="startLife" onclick="startLife()">Go</button>
+        <button class="lifeControl" id="stopLife" onclick="stopLife()">Stop</button>
+        <button class="lifeControl" id="clearLife" onclick="clearLife()">Clear</button>
+        <br>
+
+        <script src="life.js"> </script>
+    </body>
+</html>
