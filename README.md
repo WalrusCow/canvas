@@ -1,4 +1,4 @@
-conway
+Canvas
 ======
 
-Simple canvas version of Conway's game of life
+Random things with HTML5 canvas
