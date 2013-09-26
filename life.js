@@ -53,11 +53,18 @@ function stopLife() {
     lifeInterval = undefined;
 }
 
-function startLife() {
+function startLife(fps) {
     if (!lifeInterval) {
-        var fps = 4;
-        lifeMain(fps);
+        // Default to 4
+        lifeMain(fps || 4);
     }
+}
+
+function updateLifeSpeed(id) {
+    stopLife();
+    // Get fps from the slider
+    var fps = document.getElementById(id).value;
+    startLife(fps);
 }
 
 function lifeMain(fps) {
@@ -67,8 +74,8 @@ function lifeMain(fps) {
 
 function sumNeighbours(gameGrid, x, y) {
     /* Add 1 to the number of neighbours of each neighbour
-       of gameGrid[x][y].
-       */
+     * of gameGrid[x][y].
+     */
     var width = gameGrid.length;
     var height = gameGrid[0].length;
 
