@@ -2,6 +2,11 @@ define(function() {
 
   util = {};
 
+  util.drawSquare(ctx, coords, size, fill) {
+    ctx.fillStyle = fill;
+    ctx.fillRect(coords.x, coords.y, size, size);
+  };
+
   util.isPlainObject = function(x) {
     return typeof x == 'object' && x.constructor == Object;
   };
