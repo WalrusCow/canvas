@@ -163,6 +163,22 @@ define(function () {
       return gameGrid;
   }
 
+  function init() {
+    /* Initialize handlers and etc. */
+    var controls = [
+      { id : 'startLife', handler : startLife, event : 'click' },
+      { id : 'stopLife', handler : stopLife, event : 'click' },
+      { id : 'clearLife', handler : clearLife, event : 'click' },
+      { id : 'lifeSpeed', handler : updateLifeSpeed, event : 'change' }
+    ];
+
+    // Create an event handler
+    function makeHandler(f) {
+      return function(e) { f(); e.preventDefault(); };
+    }
+
+  }
+
   return {
     start : startLife,
     stop : stopLife,
