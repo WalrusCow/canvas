@@ -36,12 +36,12 @@ define(['util'], function (util) {
       { id : 'stop', handler : this.stop, event : 'click' },
       { id : 'clear', handler : this.clear, event : 'click' },
       { id : 'speed', handler : this.updateSpeed, event : 'change' },
-      { id : 'canvas', handler : this.clickLife, event : 'mousedown' }
+      { id : 'canvas', handler : this.click, event : 'mousedown' }
     ];
 
     // Create an event handler
-    function makeHandler(f) {
-      return function(e) { f(); e.preventDefault(); };
+    function makeHandler(f, t) {
+      return function(e) { f.apply(t, arguments); e.preventDefault(); };
     }
 
     util.each(controls, function(control) {
@@ -50,14 +50,21 @@ define(['util'], function (util) {
       // Set control elements
       self[control.id + 'Control'] = el;
       // Set event listener
-      el.addEventListener(control.event, makeHandler(control.handler));
+      el.addEventListener(control.event, makeHandler(control.handler, self));
     });
 
     this.ctx = this.canvasControl.getContext('2d');
 
   };
 
-  Life.prototype.getCoords = function(x, y) {
+  Life.prototype.pixelsToCoords = function(x, y) {
+    return {
+      x : Math.floor(x / this.options.cellSize),
+      y : Math.floor(y / this.options.cellSize)
+    };
+  };
+
+  Life.prototype.coordsToPixels = function(x, y) {
     /* Get actual canvas coords for a life grid point */
     return {
       x : this.options.cellSize * x,
@@ -78,15 +85,14 @@ define(['util'], function (util) {
     // Invalid click
     if(x < 0 || y < 0) return;
 
-    var coords = this.getCoords(x, y);
-
+    var coords = this.pixelsToCoords(x, y);
     var cell = this.gameGrid[coords.x][coords.y];
 
     // Flip the alive state
     cell.alive = !cell.alive;
 
     // Draw or clear as appropriate
-    cell.alive ? this.drawCell(x, y) : this.clearCell(x, y);
+    cell.alive ? this.drawCell(coords.x, coords.y) : this.clearCell(coords.x, coords.y);
 
   };
 
@@ -168,7 +174,7 @@ define(['util'], function (util) {
 
   Life.prototype.drawCell = function(x, y) {
     /* Draw the cell at position (x, y) */
-    var coords = this.getCoords(x, y);
+    var coords = this.coordsToPixels(x, y);
     var cellSize = this.options.cellSize;
 
     util.drawSquare(this.ctx, coords, cellSize, this.options.cellBorder);
@@ -186,7 +192,7 @@ define(['util'], function (util) {
 
   Life.prototype.clearCell = function(x, y) {
     /* Undraw cell at position (x, y) */
-    var coords = this.getCoords(x, y);
+    var coords = this.coordsToPixels(x, y);
     var cellSize = this.options.cellSize;
     this.ctx.clearRect(coords.x, coords.y, cellSize, cellSize);
   };

@@ -2,7 +2,7 @@ define(function() {
 
   util = {};
 
-  util.drawSquare(ctx, coords, size, fill) {
+  util.drawSquare = function(ctx, coords, size, fill) {
     ctx.fillStyle = fill;
     ctx.fillRect(coords.x, coords.y, size, size);
   };
@@ -14,7 +14,7 @@ define(function() {
   util.each = function(obj, f) {
     if(obj instanceof Array) {
       for(var i = 0; i < obj.length; ++i) f(obj[i], i);
-    } else if(isPlainObject(obj)) {
+    } else if(this.isPlainObject(obj)) {
       for(var key in obj) f(obj[key], key);
     }
   };
@@ -22,9 +22,10 @@ define(function() {
   util.deepCopy = function(obj) {
     /* Copy an object, with new Arrays and Object members */
 
+    var self = this;
     function _copyInto(obj, ret) {
 
-      each(obj, function(val, key) {
+      self.each(obj, function(val, key) {
         if(val instanceof Array) {
           // Copy array
           ret[key] = [];
@@ -55,17 +56,18 @@ define(function() {
      * and all properties of src. Those of src take precedence.
      */
 
+    var self = this;
     function _extend(src, ret) {
-      each(src, function(val, key) {
+      self.each(src, function(val, key) {
 
         // Set to empty object if not present
         if(ret[key] === undefined) ret[key] = {};
 
         // If value is object, recurse
-        if(isPlainObject(val)) {
+        if(self.isPlainObject(val)) {
           _extend(val, ret[key]);
         } else if(val instanceof Array) {
-          ret[key] = deepCopy(val);
+          ret[key] = self.deepCopy(val);
         } else {
           ret[key] = val;
         }
@@ -74,10 +76,9 @@ define(function() {
       return ret;
     }
 
-    return _extend(src, deepCopy(dest));
+    return _extend(src, this.deepCopy(dest));
 
   };
 
   return util;
-
 });

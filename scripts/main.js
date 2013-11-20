@@ -5,11 +5,12 @@ requirejs.config({
 });
 
 requirejs(['life', 'snake'], function(Life, Snake) {
+
+  // Initialize life!
+  var lifeGame = new Life();
+
   var controls = [
-    { id : 'playSnake', handler : Snake.play },
-    { id : 'startLife', handler : Life.start },
-    { id : 'stopLife', handler : Life.stop },
-    { id : 'clearLife', handler : Life.clear }
+    { id : 'playSnake', handler : Snake.play }
   ];
 
   function makeHandler(f) {
