@@ -35,11 +35,11 @@ define(['util'], function (util) {
       { id : 'start', handler : this.start, event : 'click' },
       { id : 'stop', handler : this.stop, event : 'click' },
       { id : 'clear', handler : this.clear, event : 'click' },
-      { id : 'speed', handler : this.updateSpeed, event : 'change' },
+      { id : 'speed', handler : this.updateFps, event : 'change' },
       { id : 'canvas', handler : this.click, event : 'mousedown' }
     ];
 
-    // Create an event handler
+    // Create an event handler. Take function and what `this` should be
     function makeHandler(f, t) {
       return function(e) { f.apply(t, arguments); e.preventDefault(); };
     }
@@ -122,32 +122,46 @@ define(['util'], function (util) {
 
   Life.prototype.stop = function() {
     /* Stop the game. */
-    this.interval && window.clearInterval(this.interval);
+    if(this.started) {
+      this._stopTimer();
+      this.started = false;
+    }
+  };
+
+  Life.prototype.start = function() {
+    /* Start the game. */
+
+    // If not started, update the FPS, which starts the game
+    if(!this.started) {
+      this._startTimer();
+      this.started = true;
+    }
+  };
+
+  Life.prototype._stopTimer = function() {
+    window.clearInterval(this.interval);
     delete this.interval;
   };
 
-  Life.prototype.start = function(fps) {
-    /* Start the game. */
-
-    // Already started
-    if(this.interval) return;
-
+  Life.prototype._startTimer = function() {
+    var fps = this.speedControl.value;
+    // Milliseconds in between ticks
     var ms = Math.floor(1000 / fps);
-
-    this.interval = setInterval(self._tick, ms);
+    this.interval = window.setInterval(this._tick.bind(this), ms);
   };
 
   Life.prototype.updateFps = function() {
-    this.stop();
-    var fps = this.fpsSlider.values;
-    this.start(fps);
+    if(!this.started) return;
+    this._stopTimer();
+    this._startTimer();
   };
 
   Life.prototype._tick = function() {
+    console.log('tick');
     // Count the neighbours of each
     for(var x = 0; x < this.gridSize.x; ++x) {
       for(var y = 0; y < this.gridSize.y; ++y) {
-        sumNeighbours(this.gameGrid, x, y);
+        this._countNeighbours(x, y);
       }
     }
 
@@ -167,7 +181,7 @@ define(['util'], function (util) {
         cell.neighbours = 0;
 
         // Draw or clear the cell
-        cell.alive ? drawCell(x, y) : clearCell(x, y);
+        cell.alive ? this.drawCell(x, y) : this.clearCell(x, y);
       }
     }
   }
@@ -195,6 +209,11 @@ define(['util'], function (util) {
     var coords = this.coordsToPixels(x, y);
     var cellSize = this.options.cellSize;
     this.ctx.clearRect(coords.x, coords.y, cellSize, cellSize);
+  };
+
+  Life.prototype._getNeighbours = function(x, y) {
+    /* Return array of neighbouring cells to cell at (x, y) */
+
   };
 
   Life.prototype._countNeighbours = function(x, y) {
