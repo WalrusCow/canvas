@@ -172,10 +172,10 @@ define(['util'], function (util) {
 
         if(cell.alive) {
           // Live if neighbours are 2 or 3, die otherwise
-          cell.alive = !(cell.neighbours === 2 || cell.neighbours === 3);
+          cell.alive = (cell.neighbours === 2 || cell.neighbours === 3);
         } else {
           // Become alive if exactly 3 neighbours
-          cell.alive = cell.neighbours === 3;
+          cell.alive = (cell.neighbours === 3);
         }
 
         cell.neighbours = 0;
@@ -214,27 +214,35 @@ define(['util'], function (util) {
   Life.prototype._getNeighbours = function(x, y) {
     /* Return array of neighbouring cells to cell at (x, y) */
 
+    var width = this.gridSize.x;
+    var height = this.gridSize.y;
+
+    var neighbours = [];
+
+    // i, j are offsets from x, y.  Make sure to not go out of bounds
+    for(var i = (x && -1); i <= ((width-x-1) && 1); ++i) {
+      for(var j = (y && -1); j <= ((height-y-1) && 1); ++j) {
+        // A cell is not its own neighbour
+        if(i || j) neighbours.push(this.gameGrid[x + i][y + j]);
+      }
+    }
+
+    return neighbours;
   };
 
   Life.prototype._countNeighbours = function(x, y) {
     /*
      * Add 1 to the number of neighbours of each neighbour
-     * of gameGrid[x][y].
+     * of cell (x, y) if cell (x, y) is alive.
      */
-    var width = this.gridSize.x;
-    var height = this.gridSize.y;
 
     // Add to neighbours only if alive
     if(!this.gameGrid[x][y].alive) return;
 
     // Don't go out of bounds
-    for(var i = (x && -1); i <= ((width-x-1) && 1); ++i) {
-      for(var j = (y && -1); j <= ((height-y-1) && 1); ++j) {
-        // Don't do the current block (both 0)
-        if(i || j) {
-          this.gameGrid[x+i][y+j].neighbours += 1;
-        }
-      }
+    var neighbours = this._getNeighbours(x, y);
+    for(var i = 0; i < neighbours.length; ++i) {
+      neighbours.neighbours += 1;
     }
   };
 
