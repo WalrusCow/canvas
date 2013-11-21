@@ -242,7 +242,7 @@ define(['util'], function (util) {
     // Don't go out of bounds
     var neighbours = this._getNeighbours(x, y);
     for(var i = 0; i < neighbours.length; ++i) {
-      neighbours.neighbours += 1;
+      neighbours[i].neighbours += 1;
     }
   };
 
