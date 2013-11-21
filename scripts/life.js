@@ -157,7 +157,6 @@ define(['util'], function (util) {
   };
 
   Life.prototype._tick = function() {
-    console.log('tick');
     // Count the neighbours of each
     for(var x = 0; x < this.gridSize.x; ++x) {
       for(var y = 0; y < this.gridSize.y; ++y) {
