@@ -206,8 +206,7 @@ define(['util'], function (util) {
   Life.prototype.clearCell = function(x, y) {
     /* Undraw cell at position (x, y) */
     var coords = this.coordsToPixels(x, y);
-    var cellSize = this.options.cellSize;
-    this.ctx.clearRect(coords.x, coords.y, cellSize, cellSize);
+    util.clearSquare(this.ctx, coords, this.options.cellSize);
   };
 
   Life.prototype._getNeighbours = function(x, y) {

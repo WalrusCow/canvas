@@ -2,6 +2,10 @@ define(function() {
 
   util = {};
 
+  util.clearSquare = function(ctx, coords, size) {
+    ctx.clearRect(coords.x, coords.y, size, size);
+  };
+
   util.drawSquare = function(ctx, coords, size, fill) {
     ctx.fillStyle = fill;
     ctx.fillRect(coords.x, coords.y, size, size);
