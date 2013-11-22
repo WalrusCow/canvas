@@ -84,5 +84,22 @@ define(function() {
 
   };
 
+  util.registerControls = function(obj, controls, sel) {
+    // Create an event handler. Take function and what `this` should be
+    function makeHandler(f, t) {
+      return function(e) { f.apply(t, arguments); e.preventDefault(); };
+    }
+
+    util.each(controls, function(control) {
+      var id = sel + control.id;
+      var el = document.getElementById(id);
+      // Set control elements
+      obj[control.id + 'Control'] = el;
+      // Set event listener
+      el.addEventListener(control.event, makeHandler(control.handler, obj));
+    });
+
+  };
+
   return util;
 });

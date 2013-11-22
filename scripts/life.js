@@ -1,18 +1,18 @@
 define(['util'], function (util) {
-  // Defaults
-  var lifeDefaults = {
-    cellSize : 10,
-    cellFill : '#87AFC7',
-    cellBorder : '25383C',
-    cellBorderSize : 1,
-    controlSelector : 'Life-'
-  };
-
   function Life(options) {
     /* Encapsulate a single Life game */
 
+    // Defaults
+    var defaultOptions = {
+      cellSize : 10,
+      cellFill : '#87AFC7',
+      cellBorder : '25383C',
+      cellBorderSize : 1,
+      controlSelector : 'Life-'
+    };
+
     options = options || {};
-    this.options = util.extend(lifeDefaults, options);
+    this.options = util.extend(defaultOptions, options);
 
     // Set controls and event listeners
     this._initControls();
@@ -30,7 +30,6 @@ define(['util'], function (util) {
 
   Life.prototype._initControls = function() {
     /* Initialize handlers and etc. */
-    var self = this;
     var controls = [
       { id : 'start', handler : this.start, event : 'click' },
       { id : 'stop', handler : this.stop, event : 'click' },
@@ -39,20 +38,7 @@ define(['util'], function (util) {
       { id : 'canvas', handler : this.click, event : 'mousedown' }
     ];
 
-    // Create an event handler. Take function and what `this` should be
-    function makeHandler(f, t) {
-      return function(e) { f.apply(t, arguments); e.preventDefault(); };
-    }
-
-    util.each(controls, function(control) {
-      var id = self.options.controlSelector + control.id;
-      var el = document.getElementById(id);
-      // Set control elements
-      self[control.id + 'Control'] = el;
-      // Set event listener
-      el.addEventListener(control.event, makeHandler(control.handler, self));
-    });
-
+    util.registerControls(this, controls, this.options.controlSelector);
     this.ctx = this.canvasControl.getContext('2d');
 
   };
