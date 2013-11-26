@@ -39,16 +39,20 @@ define(['sg', 'util'], function(sg, util) {
 
     this.body = [];
 
-    // The initial offset
-    var offset = sg.copyPoint(DIR_MAP[this.dir]);
+    var opposite = OPPOSITES[this.dir];
+
+    // The initial offset (we need to build the snake in the opposite
+    // direction that it is moving)
+    var offset = sg.copyPoint(DIR_MAP[opposite]);
 
     for (var i = 0; i < 3; ++i) {
       // Use dir map here
       var posn = sg.addPoints(opt.startPoint, offset);
-      offset = sg.addPoints(offset, DIR_MAP[this.dir]);
+      offset = sg.addPoints(offset, DIR_MAP[opposite]);
 
       // Add the block and draw it
       this.body.push(new this.Block(posn, this.blockConfig));
+      if (i===0)this.body[i].fill = 'red';
       this.body[i].draw();
     }
 
@@ -88,10 +92,6 @@ define(['sg', 'util'], function(sg, util) {
   Snake.prototype.move = function() {
     /* Move the snake in the appropriate direction. */
 
-    // End of the snake
-    var tail = this.body.pop();
-    tail.undraw();
-
     // Change direction if necessary
     this.dir = this.commands.current || this.dir;
 
@@ -123,6 +123,8 @@ define(['sg', 'util'], function(sg, util) {
       tail.undraw();
     }
 
+    console.log(this.body);
+
     // Return true if the move was successful (didn't hit self)
     return !this._intersection();
 
@@ -137,11 +139,12 @@ define(['sg', 'util'], function(sg, util) {
     /* Check if the Snake intersects itself or the wall. */
 
     // We only need to check against the head, since that's all that moved
-    var headCoords = this.body[0].coords;
+    // `hc` is shorthand for `headCoords`
+    var hc = this.body[0].coords;
 
     // Check for intersection of self
     for (var i = 1; i < this.body.length; ++i) {
-      if (sg.pointsEqual(headCoords, this.body[i].coords)) {
+      if (sg.pointsEqual(hc, this.body[i].coords)) {
         return true;
       }
     }
@@ -150,7 +153,7 @@ define(['sg', 'util'], function(sg, util) {
     var gs = this.gameSize;
 
     // Check for intersection of wall
-    return (headCoords.x >= gs.x) || (headCoords.y >= gs.y);
+    return (hc.x >= gs.x) || (hc.y >= gs.y) || (hc.x < 0) || (hc.y < 0);
   };
 
   Snake.prototype.changeDirection = function(dir) {
@@ -190,10 +193,24 @@ define(['sg', 'util'], function(sg, util) {
     /* Encapsulate a game of Snake */
 
     var defaultOptions = {
-      blockSize : 10,
-      snakeColour : '#000000',
-      foodColour : '#565656',
-      controlSelector : 'Snake-'
+      blockSize: 10,
+      snakeColour: '#000000',
+      foodColour: '#565656',
+      gameSpeed: 1150,
+      controlSelector: 'Snake-',
+      snakeOptions: {
+        dir: 'l',
+        startPoint: {
+          x: 5,
+          y: 5
+        },
+        blockConfig: {
+          fill: '#000000'
+        },
+        foodConfig: {
+          fill: '#565656'
+        }
+      }
     };
 
     options = options || {};
@@ -201,6 +218,12 @@ define(['sg', 'util'], function(sg, util) {
 
     // Initialize controls and control objects
     this._initControls();
+
+    // Also set the game size
+    this.options.snakeOptions.gameSize = {
+      x: Math.floor(this.canvasControl.width / this.options.blockSize),
+      y: Math.floor(this.canvasControl.height / this.options.blockSize)
+    };
 
     var blockOptions = {
       ctx : this.ctx,
@@ -210,20 +233,35 @@ define(['sg', 'util'], function(sg, util) {
     // Create the class that will be used to generate blocks
     this.Block = sg.GameGrid(blockOptions);
 
-    var snakeOptions = {
-      dir: 'l',
-      blockConfig: {
-        fill: '#000000'
-      },
-      foodConfig: {
-        fill: '#565656'
-      }
-    };
-
     // Create the snake we'll be playing with
-    this.snake = new Snake(this.Block, snakeOptions);
+    this.snake = new Snake(this.Block, this.options.snakeOptions);
 
   }
+
+  SnakeGame.prototype.start = function() {
+    /* Start the game. */
+    if (!this._interval) {
+      // Always call with `this` as context
+      var ticker = this._tick.bind(this);
+      this._interval = setInterval(ticker, this.options.gameSpeed);
+    }
+  };
+
+  SnakeGame.prototype.gameOver = function() {
+    /* End of the game. */
+    clearInterval(this._interval);
+    this.ctx.clearRect(0, 0, this.canvasControl.width, this.canvasControl.height);
+    this.snake = new Snake(this.Block, this.options.snakeOptions);
+  };
+
+  SnakeGame.prototype._tick = function() {
+    /* One tick of the game. */
+    if (!this.snake.move()) {
+      // Move failed - game over
+      this.gameOver();
+      clearInterval(this._interval);
+    }
+  };
 
   SnakeGame.prototype.keydown = function(e) {
     /* Event listener for keypress */

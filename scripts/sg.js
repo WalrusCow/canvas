@@ -35,13 +35,19 @@ define(function() {
        */
 
       this.coords = {
+        x: coords.x,
+        y: coords.y
+      };
+
+      // Real coordinates in pixels
+      this._pxCoords = {
         x: coords.x * squareSize + offset.x,
         y: coords.y * squareSize + offset.y
       };
 
       // Set all options (but don't overwrite existing properties)
       for (var key in options) {
-        if (!(this[key] || this.prototype[key])) {
+        if (!(this[key] || Block.prototype[key])) {
           this[key] = options[key];
         }
       }
@@ -53,17 +59,17 @@ define(function() {
 
       // No border - simple drawing
       if (!this.hasBorder) {
-        drawSquare(this.coords, squareSize, this.fill);
+        drawSquare(this._pxCoords, squareSize, this.fill);
         return;
       }
 
       // Draw border (middle will be filled with fill)
-      drawSquare(this.coords, squareSize, this.borderFill);
+      drawSquare(this._pxCoords, squareSize, this.borderFill);
 
       // Coords of inside are shifted by border size
       var insideCoords = {
-        x: this.coords.x - this.borderSize,
-        y: this.coords.y - this.borderSize
+        x: this._pxCoords.x - this.borderSize,
+        y: this._pxCoords.y - this.borderSize
       };
       // Size of inside is shrunk by twice border size
       var insideSize = squareSize - 2 * this.borderSize;
@@ -74,7 +80,7 @@ define(function() {
 
     Block.prototype.undraw = function() {
       /* Undraw the block. */
-      ctx.clearRect(this.coords.x, this.coords.y, squareSize, squareSize);
+      ctx.clearRect(this._pxCoords.x, this._pxCoords.y, squareSize, squareSize);
     };
 
     // Return the class that can be used for the grid
@@ -129,7 +135,7 @@ define(function() {
 
   sg.randInt = function(min, max) {
     /* Generate a random integer in the interval [min, max). */
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    return Math.floor(Math.random() * (max - min)) + min;
   };
 
   return sg;
