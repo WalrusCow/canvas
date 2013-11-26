@@ -154,6 +154,15 @@ define(['sg', 'util'], function(sg, util) {
   };
 
   Snake.prototype.changeDirection = function(dir) {
+    /*
+     * Change the direction to be a new direction.  This is not as simple as
+     * just assigning the property, because the Snake has a direction 'queue'
+     * of length two.  This is in case the user hits one key soon after another,
+     * before the Snake has made the first move.  Just setting the property
+     * would overwrite the original move, which is probably not what was
+     * intended.
+     */
+
     // Current working direction (direction snake will be going)
     var cwd = this.dir;
     // Which command we are editing
@@ -202,7 +211,13 @@ define(['sg', 'util'], function(sg, util) {
     this.Block = sg.GameGrid(blockOptions);
 
     var snakeOptions = {
-      dir : 'l'
+      dir: 'l',
+      blockConfig: {
+        fill: '#000000'
+      },
+      foodConfig: {
+        fill: '#565656'
+      }
     };
 
     // Create the snake we'll be playing with
@@ -217,31 +232,33 @@ define(['sg', 'util'], function(sg, util) {
     switch (e.keyCode) {
       case UP_ARROW:
       case W_KEY:
-        this.snake.changeCommand('u');
+        this.snake.changeDirection('u');
         break;
       case DOWN_ARROW:
       case S_KEY:
-        this.snake.changeCommand('d');
+        this.snake.changeDirection('d');
         break;
       case LEFT_ARROW:
       case A_KEY:
-        this.snake.changeCommand('l');
+        this.snake.changeDirection('l');
         break;
       case RIGHT_ARROW:
       case D_KEY:
-        this.snake.changeCommand('r');
+        this.snake.changeDirection('r');
         break;
     }
 
   };
 
   SnakeGame.prototype._initControls = function() {
+    /* Initialize the controls for the game. */
     var controls = [
       { id : 'canvas', handler : this.keydown, event : 'keydown' },
       { id : 'start', handler : this.start, event : 'click' }
     ];
 
     sg.registerControls(this, controls, this.options.controlSelector);
+    // We also care about the context
     this.ctx = this.canvasControl.getContext('2d');
 
   };
