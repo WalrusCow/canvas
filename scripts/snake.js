@@ -52,7 +52,6 @@ define(['sg', 'util'], function(sg, util) {
 
       // Add the block and draw it
       this.body.push(new this.Block(posn, this.blockConfig));
-      if (i===0)this.body[i].fill = 'red';
       this.body[i].draw();
     }
 
@@ -250,6 +249,7 @@ define(['sg', 'util'], function(sg, util) {
   SnakeGame.prototype.gameOver = function() {
     /* End of the game. */
     clearInterval(this._interval);
+    delete this._interval;
     this.ctx.clearRect(0, 0, this.canvasControl.width, this.canvasControl.height);
     this.snake = new Snake(this.Block, this.options.snakeOptions);
   };
