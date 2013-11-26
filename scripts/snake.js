@@ -122,8 +122,6 @@ define(['sg', 'util'], function(sg, util) {
       tail.undraw();
     }
 
-    console.log(this.body);
-
     // Return true if the move was successful (didn't hit self)
     return !this._intersection();
 
@@ -195,7 +193,7 @@ define(['sg', 'util'], function(sg, util) {
       blockSize: 10,
       snakeColour: '#000000',
       foodColour: '#565656',
-      gameSpeed: 1150,
+      gameSpeed: 120,
       controlSelector: 'Snake-',
       snakeOptions: {
         dir: 'l',
@@ -243,6 +241,9 @@ define(['sg', 'util'], function(sg, util) {
       // Always call with `this` as context
       var ticker = this._tick.bind(this);
       this._interval = setInterval(ticker, this.options.gameSpeed);
+
+      // We need to focus the canvas for keydown events to fire
+      this.canvasControl.focus();
     }
   };
 
