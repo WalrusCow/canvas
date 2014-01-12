@@ -1,4 +1,4 @@
-define(['util'], function (util) {
+define(['sg', 'util'], function (sg, util) {
   function Life(options) {
     /* Encapsulate a single Life game */
 
@@ -38,7 +38,7 @@ define(['util'], function (util) {
       { id : 'canvas', handler : this.click, event : 'mousedown' }
     ];
 
-    util.registerControls(this, controls, this.options.controlSelector);
+    sg.registerControls(this, controls, this.options.controlSelector);
     this.ctx = this.canvasControl.getContext('2d');
 
   };
@@ -59,8 +59,20 @@ define(['util'], function (util) {
   }
 
   Life.prototype.click = function(e) {
-    var x = e.x - this.canvasControl.offsetLeft;
-    var y = e.y - this.canvasControl.offsetTop;
+    // Compute the click relative to the canvas
+    var offset = {
+      x: 0,
+      y: 0
+    };
+    // Current element
+    var el = this.canvasControl;
+    // Loop through all parents to get total offset
+    do {
+      offset.x += el.offsetLeft - el.scrollLeft;
+      offset.y += el.offsetTop - el.scrollTop;
+    } while(el = el.offsetParent)
+    var x = e.clientX - offset.x;
+    var y = e.clientY - offset.y;
 
     // Account for the border
     var re = /px$/;
@@ -68,10 +80,12 @@ define(['util'], function (util) {
     x -= canvasStyle.getPropertyValue('border-left-width').replace(re, '');
     y -= canvasStyle.getPropertyValue('border-top-width').replace(re, '');
 
-    // Invalid click
-    if(x < 0 || y < 0) return;
-
     var coords = this.pixelsToCoords(x, y);
+
+    // Invalid click detection
+    if(coords.x < 0 || coords.y < 0 ||
+       coords.x >= this.gridSize.x || coords.y >= this.gridSize.y) return;
+
     var cell = this.gameGrid[coords.x][coords.y];
 
     // Flip the alive state
