@@ -118,6 +118,8 @@ define(['sg', 'util'], function (sg, util) {
       }
     }
     this.ctx.clearRect(0, 0, this.canvasControl.width, this.canvasControl.height);
+    // Doesn't make sense to clear without stopping as well
+    this.stop();
   };
 
   Life.prototype.stop = function() {
