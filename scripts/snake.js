@@ -80,7 +80,6 @@ define(['sg', 'util'], function(sg, util) {
           break;
         }
       }
-
     }
 
     // Create and draw the new food block
@@ -124,7 +123,6 @@ define(['sg', 'util'], function(sg, util) {
 
     // Return true if the move was successful (didn't hit self)
     return !this._intersection();
-
   };
 
   Snake.prototype._hitFood = function() {
@@ -194,9 +192,9 @@ define(['sg', 'util'], function(sg, util) {
       gameSpeed: 120,
       controlSelector: 'Snake-',
       snakeOptions: {
-        dir: 'l',
+        dir: 'r',
         startPoint: {
-          x: 5,
+          x: 8,
           y: 5
         },
         blockConfig: {
@@ -230,7 +228,6 @@ define(['sg', 'util'], function(sg, util) {
 
     // Create the snake we'll be playing with
     this.snake = new Snake(this.Block, this.options.snakeOptions);
-
   }
 
   SnakeGame.prototype.start = function() {
@@ -264,6 +261,8 @@ define(['sg', 'util'], function(sg, util) {
 
   SnakeGame.prototype.keydown = function(e) {
     /* Event listener for keypress */
+    // Game not yet started - do nothing
+    if (!this._interval) return;
 
     // Change the direction based on the key press
     switch (e.keyCode) {
@@ -284,7 +283,6 @@ define(['sg', 'util'], function(sg, util) {
         this.snake.changeDirection('r');
         break;
     }
-
   };
 
   SnakeGame.prototype._initControls = function() {
@@ -297,7 +295,6 @@ define(['sg', 'util'], function(sg, util) {
     sg.registerControls(this, controls, this.options.controlSelector);
     // We also care about the context
     this.ctx = this.canvasControl.getContext('2d');
-
   };
 
   return SnakeGame;
