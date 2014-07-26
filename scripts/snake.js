@@ -191,8 +191,6 @@ define(['sg', 'util'], function(sg, util) {
 
     var defaultOptions = {
       blockSize: 10,
-      snakeColour: '#000000',
-      foodColour: '#565656',
       gameSpeed: 120,
       controlSelector: 'Snake-',
       snakeOptions: {
@@ -205,7 +203,7 @@ define(['sg', 'util'], function(sg, util) {
           fill: '#000000'
         },
         foodConfig: {
-          fill: '#565656'
+          fill: '#AA1F1F'
         }
       }
     };
