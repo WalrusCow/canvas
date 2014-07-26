@@ -6,7 +6,7 @@ define(['sg', 'util'], function (sg, util) {
     var defaultOptions = {
       cellSize : 10,
       cellFill : '#87AFC7',
-      cellBorder : '25383C',
+      cellBorder : '#25383C',
       cellBorderSize : 1,
       controlSelector : 'Life-'
     };
