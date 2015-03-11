@@ -1,0 +1,9 @@
+{
+  "name": "canvas",
+  "private": true,
+  "version": "1.0.0",
+  "ignore": ["LICENSE", "README.md"],
+  "dependencies": {
+    "sg": "https://github.com/WalrusCow/sg.git"
+  }
+}

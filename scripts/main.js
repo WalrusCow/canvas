@@ -1,7 +1,7 @@
 requirejs.config({
   urlArgs: "ts="+new Date().getTime(),
   baseUrl : 'scripts',
-  paths : { 'require' : '..' }
+  paths : { 'require' : '/scripts/lib/requirejs' }
 });
 
 requirejs(['life', 'snake'], function(Life, SnakeGame) {

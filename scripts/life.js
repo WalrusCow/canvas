@@ -1,4 +1,4 @@
-define(['sg', 'util'], function (sg, util) {
+define(['lib/sg/sg', 'util'], function (sg, util) {
   function Life(options) {
     /* Encapsulate a single Life game */
 
