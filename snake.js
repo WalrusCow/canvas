@@ -1,4 +1,4 @@
-define(['lib/sg/sg', 'util'], function(sg, util) {
+define(['lib/sg/sg', 'lib/sg/util'], function(sg, util) {
 
   // Keycode constants
   var UP_ARROW = 38;
