@@ -1,4 +1,4 @@
-Canvas
+Snake
 ======
 
-Conway's game of life and Snake in the canvas.
+Snake in the canvas.
