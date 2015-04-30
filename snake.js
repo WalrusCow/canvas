@@ -106,10 +106,6 @@ define(['lib/sg/sg', 'lib/sg/util'], function(sg, util) {
     // Coordinates of the new head
     var newHeadCoords = sg.addPoints(move, newHead.coords);
 
-    // Create and draw the new head
-    this.body.unshift(new this.Block(newHeadCoords, this.blockConfig));
-    this.body[0].draw();
-
     if (this._hitFood()) {
       // We ate food, so make new food
       this.newFood();
@@ -120,6 +116,10 @@ define(['lib/sg/sg', 'lib/sg/util'], function(sg, util) {
       var tail = this.body.pop();
       tail.undraw();
     }
+
+    // Create and draw the new head (after undrawing tail in case of conflict)
+    this.body.unshift(new this.Block(newHeadCoords, this.blockConfig));
+    this.body[0].draw();
 
     // Return true if the move was successful (didn't hit self)
     return !this._intersection();
