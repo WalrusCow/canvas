@@ -269,18 +269,22 @@ define(['lib/sg/sg', 'lib/sg/util'], function(sg, util) {
       case UP_ARROW:
       case W_KEY:
         this.snake.changeDirection('u');
+        e.preventDefault();
         break;
       case DOWN_ARROW:
       case S_KEY:
         this.snake.changeDirection('d');
+        e.preventDefault();
         break;
       case LEFT_ARROW:
       case A_KEY:
         this.snake.changeDirection('l');
+        e.preventDefault();
         break;
       case RIGHT_ARROW:
       case D_KEY:
         this.snake.changeDirection('r');
+        e.preventDefault();
         break;
     }
   };
