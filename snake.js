@@ -111,10 +111,12 @@ define(['lib/sg/sg', 'lib/sg/util', 'eventemitter'], function(sg, util, EventEmi
     // Coordinates of the new head
     var newHeadCoords = sg.addPoints(move, newHead.coords);
 
+    var grew = false;
+
     if (this._hitFood()) {
       // We ate food, so make new food
       this.newFood();
-      this.trigger('length:change', this.body.length);
+      grew = true;
 
     } else {
       // We didn't eat food, so remove the last piece of the Snake
@@ -126,6 +128,9 @@ define(['lib/sg/sg', 'lib/sg/util', 'eventemitter'], function(sg, util, EventEmi
     // Create and draw the new head (after undrawing tail in case of conflict)
     this.body.unshift(new this.Block(newHeadCoords, this.blockConfig));
     this.body[0].draw();
+    if (grew) {
+      this.trigger('length:change', this.body.length);
+    }
 
     // Return true if the move was successful (didn't hit self)
     return !this._intersection();
@@ -243,12 +248,18 @@ define(['lib/sg/sg', 'lib/sg/util', 'eventemitter'], function(sg, util, EventEmi
 
   SnakeGame.prototype.start = function() {
 
+    if (this._resetNeeded) {
+      this._reset();
+    }
+
     /* listen to events */
+    /* TODO: simply pass through all snake events
+             with `snake:' prefix   */
     this.snake.on('length:change', function(length) {
-      this.trigger('snake:length:change', length);
+      this.trigger('snake:length:change', this.snake, length);
     }, this);
     /* manually notify that the length is 0 */
-    this.trigger('snake:length:change', 0);
+    this.trigger('snake:length:change', this.snake, this.snake.body.length);
 
     /* Start the game. */
     if (!this._interval) {
@@ -265,8 +276,13 @@ define(['lib/sg/sg', 'lib/sg/util', 'eventemitter'], function(sg, util, EventEmi
     /* End of the game. */
     clearInterval(this._interval);
     delete this._interval;
+    this._resetNeeded = true;
+  };
+
+  SnakeGame.prototype._reset = function () {
     this.ctx.clearRect(0, 0, this.canvasControl.width, this.canvasControl.height);
     this.snake = new Snake(this.Block, this.options.snakeOptions);
+    this._resetNeeded = false;
   };
 
   SnakeGame.prototype._tick = function() {
