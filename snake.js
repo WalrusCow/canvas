@@ -1,4 +1,4 @@
-define(['lib/sg/sg', 'lib/sg/util'], function(sg, util) {
+define(['lib/sg/sg', 'lib/sg/util', 'eventemitter'], function(sg, util, EventEmitter) {
 
   // Keycode constants
   var UP_ARROW = 38;
@@ -23,6 +23,9 @@ define(['lib/sg/sg', 'lib/sg/util'], function(sg, util) {
      * Actual snake for game
      * Take in class to use for blocks and options.
      */
+
+    // add instance properties for EventEmitter
+    EventEmitter.call(this);
 
     this.Block = Block;
     this.dir = opt.dir;
@@ -58,6 +61,8 @@ define(['lib/sg/sg', 'lib/sg/util'], function(sg, util) {
     // Generate new food
     this.newFood();
   }
+
+  EventEmitter.extend(Snake);
 
   Snake.prototype.newFood = function() {
     /* Generate a new food piece for the Snake */
@@ -109,6 +114,7 @@ define(['lib/sg/sg', 'lib/sg/util'], function(sg, util) {
     if (this._hitFood()) {
       // We ate food, so make new food
       this.newFood();
+      this.trigger('length:change', this.body.length);
 
     } else {
       // We didn't eat food, so remove the last piece of the Snake
@@ -228,9 +234,22 @@ define(['lib/sg/sg', 'lib/sg/util'], function(sg, util) {
 
     // Create the snake we'll be playing with
     this.snake = new Snake(this.Block, this.options.snakeOptions);
+
+    // add Event capabilities
+    EventEmitter.call(this);
   }
 
+  EventEmitter.extend(SnakeGame);
+
   SnakeGame.prototype.start = function() {
+
+    /* listen to events */
+    this.snake.on('length:change', function(length) {
+      this.trigger('snake:length:change', length);
+    }, this);
+    /* manually notify that the length is 0 */
+    this.trigger('snake:length:change', 0);
+
     /* Start the game. */
     if (!this._interval) {
       // Always call with `this` as context
